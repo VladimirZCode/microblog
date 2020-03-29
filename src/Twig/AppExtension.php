@@ -18,6 +18,9 @@ class AppExtension extends AbstractExtension implements GlobalsInterface
         $this->locale = $locale;
     }
 
+    /**
+     * @return array|TwigFilter[]
+     */
     public function getFilters()
     {
         return [
@@ -25,7 +28,10 @@ class AppExtension extends AbstractExtension implements GlobalsInterface
         ];
     }
 
-    public function getGlobals()
+    /**
+     * @return array
+     */
+    public function getGlobals(): array
     {
         return [
             'locale' => $this->locale
