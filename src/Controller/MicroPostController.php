@@ -17,6 +17,7 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Environment as TwigEnvironment;
@@ -53,25 +54,33 @@ class MicroPostController
     private $entityManager;
 
     /**
+     * @var FlashBagInterface $flashBag;
+     */
+    private $flashBag;
+
+    /**
      * MicroPostController constructor.
      * @param TwigEnvironment $twig
      * @param MicroPostRepository $microPostRepository
      * @param RouterInterface $router
      * @param FormFactoryInterface $formFactory
      * @param EntityManagerInterface $entityManager
+     * @param FlashBagInterface $flashBag
      */
     public function __construct(
         TwigEnvironment $twig,
         MicroPostRepository $microPostRepository,
         RouterInterface $router,
         FormFactoryInterface $formFactory,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        FlashBagInterface $flashBag
     ) {
         $this->twig = $twig;
         $this->microPostRepository = $microPostRepository;
         $this->router = $router;
         $this->formFactory = $formFactory;
         $this->entityManager = $entityManager;
+        $this->flashBag = $flashBag;
     }
 
     /**
@@ -149,6 +158,21 @@ class MicroPostController
                 'addMicroPostForm' => $addMicroPostForm->createView()
             ])
         );
+    }
+
+    /**
+     * @Route("/delete/{id}", name="micro_post_delete")
+     * @param MicroPost $microPost
+     * @return Response
+     */
+    public function delete(MicroPost $microPost): Response
+    {
+        $this->entityManager->remove($microPost);
+        $this->entityManager->flush();
+
+        $this->flashBag->add('notice', 'The post was deleted.');
+
+        return new RedirectResponse($this->router->generate('micro_post_index'));
     }
 
 }
