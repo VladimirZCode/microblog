@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use DateTime;
 
 /**
@@ -21,6 +22,8 @@ class MicroPost
     /**
      * @var string
      * @ORM\Column(name="text", type="string", length=280)
+     * @Assert\NotBlank()
+     * @Assert\Length(min=10)
      */
     private $text;
 
